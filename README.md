@@ -1,9 +1,12 @@
 # Launch Service
+## build docker image
 ```
 docker build -t erp-api ./ --rm
 ```
+
+## run docker image
 ```
-docker run \                                                                                                                               ✔  525  10:03:56
+docker run \
 --name erp-api \
 -d \
 --rm \
