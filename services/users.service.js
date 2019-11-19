@@ -3,7 +3,7 @@ const JwtHelper = require('../helpers/jwt.helper.js');
 const UsersService = {
     getOneByEmailAsync: async (connection, email) => {
         return new Promise((resolve, reject) => {
-            connection.query(`SELECT * FROM users WHERE email='${email}'`, (error, results) => {
+            connection.query(`SELECT * FROM users WHERE email='${email}' AND deleted_at is null`, (error, results) => {
                 if (error) {
                     reject(error);
                 } else {

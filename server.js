@@ -1,10 +1,12 @@
 'use strict';
 const fs = require('fs');
 const express = require('express');
+const http = require('https');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const cookieParser = require('cookie-parser');
 const ErrorHelper = require('./helpers/error.helper.js');
+const cors = require('cors');
 const upload = multer();
 
 const evnSecretObject = JSON.parse(fs.readFileSync('secret.json').toString());
@@ -37,19 +39,31 @@ app.use(express.json({
     type: 'application/json',
     verify: undefined
 }));
+app.use(cors({
+    origin: process.env.CrossOrigin
+}));
 
 const PORT = 8080;
 const HOST = '0.0.0.0';
-app.listen(PORT, HOST);
 
+const API_PREFIX = '/api/v1/';
 var usersController = require('./controllers/users.controller.js');
-app.use('/api/users', usersController);
+app.use(`${API_PREFIX}users`, usersController);
 
 var authController = require('./controllers/auth.controller.js');
-app.use('/api/auth', authController);
+app.use(`${API_PREFIX}auth`, authController);
 
 app.use((err, req, res, next) => {
     ErrorHelper.centralErrorHandler(err, res, next);
 });
 
-console.log(`Running on http://${HOST}:${PORT}`);
+if (process.env.NODE_ENV === 'dev') {
+    http.createServer({
+        key: fs.readFileSync('./ssl/key.pem'),
+        cert: fs.readFileSync('./ssl/server.crt')
+    }, app).listen(8081);
+    console.log(`Running on http://${HOST}:8081`);
+} else {
+    app.listen(PORT, HOST);
+    console.log(`Running on http://${HOST}:${PORT}`);
+}

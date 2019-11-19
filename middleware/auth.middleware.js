@@ -9,7 +9,6 @@ module.exports = {
         if (validResult === null) {
             throw new ErrorHelper.CustomError(ErrorHelper.ErrorType.TOKEN_INVALID, httpStatus.UNAUTHORIZED);
         }
-        console.log(validResult);
         req.local = {
             JWTValidResult: validResult
         };
