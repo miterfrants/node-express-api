@@ -3,6 +3,7 @@ const JwtHelper = require('../helpers/jwt.helper.js');
 const UsersService = {
     getOneByEmailAsync: async (connection, email) => {
         return new Promise((resolve, reject) => {
+            email = email.replace(/'/gi, '\\\'');
             connection.query(`SELECT * FROM users WHERE email='${email}' AND deleted_at is null`, (error, results) => {
                 if (error) {
                     reject(error);
@@ -16,6 +17,7 @@ const UsersService = {
         const salt = CryptographicHelper.getSalt(32);
         const hash = CryptographicHelper.generateSaltedHash(password, salt);
         return new Promise((resolve, reject) => {
+            email = email.replace(/'/gi, '\\\'');
             connection.query(`INSERT INTO users (email, hash, salt) VALUE ('${email}', '${hash}', '${salt}');`, (error, result) => {
                 if (error) {
                     reject(error);

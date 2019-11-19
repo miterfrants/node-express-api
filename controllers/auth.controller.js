@@ -26,7 +26,9 @@ router.post('/signin', UtilHelper.warpAsync(async function (req, res) {
     const user = await UserServices.getOneByEmailAsync(connection, req.body.email);
     connection.end();
     if (!user) {
-        throw new ErrorHelper.CustomError(ErrorHelper.ErrorType.USER_NOT_FOUND, httpStatus.NOT_FOUND);
+        throw new ErrorHelper.CustomError(ErrorHelper.ErrorType.USER_NOT_FOUND, httpStatus.NOT_FOUND, {
+            email: req.body.email
+        });
     }
 
     if (user.status !== 1) {
