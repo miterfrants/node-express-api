@@ -7,12 +7,17 @@ const cookieParser = require('cookie-parser');
 const ErrorHelper = require('./helpers/error.helper.js');
 const upload = multer();
 
-var evnSecretObject = JSON.parse(fs.readFileSync('secret.json').toString());
+const evnSecretObject = JSON.parse(fs.readFileSync('secret.json').toString());
 for (let key in evnSecretObject) {
     process.env[key] = evnSecretObject[key];
 }
 
-var evnObject = JSON.parse(fs.readFileSync(`appsetting.${process.env.NODE_ENV || ''}.json`).toString());
+const evnCommonObject = JSON.parse(fs.readFileSync('appsetting.json').toString());
+for (let key in evnCommonObject) {
+    process.env[key] = evnCommonObject[key];
+}
+
+let evnObject = JSON.parse(fs.readFileSync(`appsetting.${process.env.NODE_ENV || ''}.json`).toString());
 for (let key in evnObject) {
     process.env[key] = evnObject[key];
 }

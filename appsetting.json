@@ -1,0 +1,4 @@
+{
+    "JwtExpirationMonth": 1,
+    "ResetTokenExpirationMinutes": 10
+}
