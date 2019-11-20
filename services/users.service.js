@@ -87,10 +87,10 @@ const UsersService = {
             });
         });
     },
-    getTokenAsync: async (connection, email, password) => {
+    getTokenAsync: async (connection, email, password, role) => {
         const user = await UsersService.getOneByEmailAsync(connection, email);
         if (user.hash === CryptographicHelper.generateSaltedHash(password, user.salt)) {
-            return await JwtHelper.generateToken(user.id, user.email);
+            return await JwtHelper.generateToken(user.id, user.email, role);
         } else {
             return null;
         }

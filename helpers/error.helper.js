@@ -10,7 +10,8 @@ const ErrorHelper = {
         'PASSWORD_OR_EMAIL_ERROR': 1000008,
         'TOKEN_INVALID': 1000009,
         'ID_SHOULD_BE_INTEGER': 1000010,
-        'STATUS_SHOULD_BE_INTEGER': 1000011
+        'STATUS_SHOULD_BE_INTEGER': 1000011,
+        'UNALLOW_PERMISSION': 1000012
     },
     CustomError: class CustomError extends Error {
         constructor(errorType, httpStatus, options) {
@@ -60,6 +61,8 @@ const ErrorHelper = {
             return 'ID 必須是數字';
         case 1000011:
             return '使用者狀態必須是數字';
+        case 1000012:
+            return '未授權取得資料';
         default:
             break;
         }

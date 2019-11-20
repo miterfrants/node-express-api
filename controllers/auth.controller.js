@@ -32,9 +32,12 @@ router.post('/signin', UtilHelper.warpAsync(async (req, res) => {
     if (user.status !== 1) {
         throw new ErrorHelper.CustomError(ErrorHelper.ErrorType.WRONG_USER_STATE, httpStatus.BAD_REQUEST);
     }
-
+    let role = AuthMW.ROLE.STAFF;
+    if (user.is_user_manager === 1) {
+        role = AuthMW.ROLE.MANAGER;
+    }
     connection = await mysqlHelper.getConnectionAsync();
-    const token = await UserServices.getTokenAsync(connection, req.body.email, req.body.password);
+    const token = await UserServices.getTokenAsync(connection, req.body.email, req.body.password, role);
     connection.end();
     if (token === null) {
         throw new ErrorHelper.CustomError(ErrorHelper.ErrorType.PASSWORD_OR_EMAIL_ERROR, httpStatus.BAD_REQUEST);
@@ -123,7 +126,7 @@ router.post('/reset-password', AuthMW.checkAuth, UtilHelper.warpAsync(async (req
         throw new ErrorHelper.CustomError(ErrorHelper.ErrorType.EMPTY_PASSWORD, httpStatus.BAD_REQUEST);
     }
     const connection = await mysqlHelper.getConnectionAsync();
-    await UserServices.resetPasswordAsync(connection, req.local.JWTValidResult.sub, req.body.password);
+    await UserServices.resetPasswordAsync(connection, req.local.JWTPayload.sub, req.body.password);
     connection.end();
     res.send({
         status: UtilHelper.CUSTOM_RESP.OK
@@ -131,7 +134,7 @@ router.post('/reset-password', AuthMW.checkAuth, UtilHelper.warpAsync(async (req
 }));
 
 router.post('/refresh-token', AuthMW.checkAuth, UtilHelper.warpAsync(async (req, res) => {
-    const newToken = await JwtHelper.generateToken(req.local.JWTValidResult.sub, req.local.JWTValidResult.email);
+    const newToken = await JwtHelper.generateToken(req.local.JWTPayload.sub, req.local.JWTPayload.email);
     if (newToken === null) {
         throw new ErrorHelper.CustomError(ErrorHelper.ErrorType.PASSWORD_OR_EMAIL_ERROR, httpStatus.BAD_REQUEST);
     }

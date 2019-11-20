@@ -8,7 +8,7 @@ const UtilHelper = require('../helpers/util.helper.js');
 const UsersService = require('../services/users.service.js');
 
 const router = express.Router();
-router.get('/', AuthMW.checkAuth, UtilHelper.warpAsync(async (req, res) => {
+router.get('/', AuthMW.checkAuth, AuthMW.hasManagerPermission, UtilHelper.warpAsync(async (req, res) => {
     let connection = await MysqlHelper.getConnectionAsync();
     const userResult = await UsersService.getListAsync(connection, req.query.page, req.query.size, req.query.email, req.query.status);
     connection.end();
@@ -31,7 +31,7 @@ router.get('/', AuthMW.checkAuth, UtilHelper.warpAsync(async (req, res) => {
     });
 }));
 
-router.patch('/:userId/status', AuthMW.checkAuth, UtilHelper.warpAsync(async (req, res) => {
+router.patch('/:userId/status', AuthMW.checkAuth, AuthMW.hasManagerPermission, UtilHelper.warpAsync(async (req, res) => {
     const id = Number(req.params.userId);
     const status = Number(req.body.status);
     if (isNaN(id)) {
@@ -49,7 +49,7 @@ router.patch('/:userId/status', AuthMW.checkAuth, UtilHelper.warpAsync(async (re
     });
 }));
 
-router.patch('/:userId/change-role', AuthMW.checkAuth, UtilHelper.warpAsync(async (req, res) => {
+router.patch('/:userId/change-role', AuthMW.checkAuth, AuthMW.hasManagerPermission, UtilHelper.warpAsync(async (req, res) => {
     const id = Number(req.params.userId);
     const is_user_manager = Number(req.body.is_user_manager);
     if (isNaN(id)) {
