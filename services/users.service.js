@@ -128,11 +128,13 @@ const UsersService = {
             connection.query(`UPDATE users SET 
                 reset_token='${resetToken}',
                 reset_token_expiration=DATE_ADD(NOW(),INTERVAL ${resetTokenExpirationMinutes} MINUTE) 
-            WHERE id=${id}`, (error, result) => {
+            WHERE id=${id}`, (error) => {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(result);
+                    resolve({
+                        resetToken: resetToken
+                    });
                 }
             });
         });

@@ -1,5 +1,6 @@
 const express = require('express');
 const httpStatus = require('http-status-codes');
+const sgMail = require('@sendgrid/mail');
 
 const mysqlHelper = require('../helpers/mysql.helper.js');
 const ErrorHelper = require('../helpers/error.helper.js');
@@ -81,9 +82,19 @@ router.post('/forgot-password', UtilHelper.warpAsync(async (req, res) => {
         throw new ErrorHelper.CustomError(ErrorHelper.ErrorType.USER_NOT_FOUND, httpStatus.NOT_FOUND);
     }
     // todo: install smtp server & send email
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
     connection = await mysqlHelper.getConnectionAsync();
-    await UserServices.forgotPasswordAsync(connection, user.id);
+    const result = await UserServices.forgotPasswordAsync(connection, user.id);
     connection.end();
+
+    const msg = {
+        to: user.email,
+        from: 'systemn@heshang.com',
+        subject: '重設密碼信件',
+        html: `<a href="${process.env.FrontEndURL}/reset-password/?email=${user.email}&reset-token=${result.resetToken}">重設連結</a>`
+    };
+    sgMail.send(msg);
     res.send({
         status: UtilHelper.CUSTOM_RESP.OK
     });
@@ -107,7 +118,7 @@ router.post('/reset-password-anonymous', UtilHelper.warpAsync(async (req, res) =
     if (!user.reset_token) {
         throw new ErrorHelper.CustomError(ErrorHelper.ErrorType.WRONG_USER_STATE, httpStatus.FORBIDDEN);
     }
-    if (user.reset_token !== req.body.reset_token) {
+    if (user.reset_token !== req.body.resetToken) {
         throw new ErrorHelper.CustomError(ErrorHelper.ErrorType.WRONG_RESET_TOKEN, httpStatus.BAD_REQUEST);
     }
     if (user.reset_token_expiration < new Date()) {
