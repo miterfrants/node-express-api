@@ -8,14 +8,12 @@ const JwtHelper = require('../helpers/jwt.helper.js');
 const UserServices = require('../services/users.service.js');
 const AuthMW = require('../middleware/auth.middleware.js');
 
-
 const router = express.Router();
-
-router.get('/test', function (req, res) {
+router.get('/test', (req, res) => {
     res.send({});
 });
 
-router.post('/signin', UtilHelper.warpAsync(async function (req, res) {
+router.post('/signin', UtilHelper.warpAsync(async (req, res) => {
     if (!req.body.email) {
         throw new ErrorHelper.CustomError(ErrorHelper.ErrorType.EMPTY_EMAIL, httpStatus.BAD_REQUEST);
     }

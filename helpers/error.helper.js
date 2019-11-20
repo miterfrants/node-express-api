@@ -8,7 +8,9 @@ const ErrorHelper = {
         'WRONG_RESET_TOKEN': 1000006,
         'RESET_TOKEN_EXPIRED': 1000007,
         'PASSWORD_OR_EMAIL_ERROR': 1000008,
-        'TOKEN_INVALID': 1000009
+        'TOKEN_INVALID': 1000009,
+        'ID_SHOULD_BE_INTEGER': 1000010,
+        'STATUS_SHOULD_BE_INTEGER': 1000011
     },
     CustomError: class CustomError extends Error {
         constructor(errorType, httpStatus, options) {
@@ -54,6 +56,10 @@ const ErrorHelper = {
             return '密碼或是 email 錯誤';
         case 1000009:
             return '錯誤的身份驗證資訊';
+        case 1000010:
+            return 'ID 必須是數字';
+        case 1000011:
+            return '使用者狀態必須是數字';
         default:
             break;
         }
