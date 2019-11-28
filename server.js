@@ -3,11 +3,10 @@ const fs = require('fs');
 const express = require('express');
 const http = require('https');
 const bodyParser = require('body-parser');
-const multer = require('multer');
+
 const cookieParser = require('cookie-parser');
 const ErrorHelper = require('./helpers/error.helper.js');
 const cors = require('cors');
-const upload = multer();
 
 const evnSecretObject = JSON.parse(fs.readFileSync('secret.json').toString());
 for (let key in evnSecretObject) {
@@ -30,7 +29,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-app.use(upload.array());
+
 app.use(express.json({
     inflate: true,
     limit: '100kb',
@@ -52,6 +51,15 @@ app.use(`${API_PREFIX}users`, usersController);
 
 var authController = require('./controllers/auth.controller.js');
 app.use(`${API_PREFIX}auth`, authController);
+
+var debtorsController = require('./controllers/debtors.controller.js');
+app.use(`${API_PREFIX}debtors`, debtorsController);
+
+var debtorFilesController = require('./controllers/debtor-files.controller.js');
+app.use(`${API_PREFIX}debtors`, debtorFilesController);
+
+var filesController = require('./controllers/files.controller.js');
+app.use(`${API_PREFIX}files`, filesController);
 
 app.use((err, req, res, next) => {
     ErrorHelper.centralErrorHandler(err, res, next);
